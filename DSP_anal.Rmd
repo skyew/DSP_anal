@@ -10,7 +10,7 @@ General Anlysis of DSP master data
 ```{r setup, include=FALSE}
 rm(list=ls())
 knitr::opts_chunk$set(echo = TRUE)
-list.of.packages <- c("knitr", "tidyverse", "aqp", "readxl", "kableExtra", "purrr")
+list.of.packages <- c("knitr", "tidyverse", "aqp", "readxl", "kableExtra", "purrr", "sharpshootR")
 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -22,6 +22,7 @@ library(purrr)
 library(aqp)
 library(readxl)
 library(kableExtra)
+library(sharpshootR)
 
 
 
@@ -313,6 +314,13 @@ k %>%
 
 
 
+tab <- table(dsp$Comp_layer, dsp$hor_desg)
+addmargins(tab)
+m <- genhzTableToAdjMat(tab)
+# plot using a function from the sharpshootR package
+par(mar=c(1,1,1,1))
+plotSoilRelationGraph(m, graph.mode = 'directed', edge.arrow.size=0.5)
+
 
 
 ```
@@ -333,7 +341,7 @@ D<-"Bgluc"
 
 
 #select primary analysis field using dsp_labels
-```{r dataprep, }
+```{r dataprep}
 
 names(dsp)
 names(dsp_labels)
@@ -357,7 +365,7 @@ dsp$bd_source <- ifelse(grepl("^BD", dsp$Property),dsp$bd_source,"")
 ##SUMMARY PLOTS
 
 ####properties should be selectable via dropdown menu
-```{r}
+```{r plots}
 
 #check labels
 dsp %>% filter(is.na(Label) & !is.na(Value)) %>% select(Property) %>% group_by(Property) %>% count()
