@@ -446,6 +446,45 @@ dsp_box <- dsp %>% filter(Property %in% prop) %>%
 ```
 
 
+```{r data_summary}
+
+ped <- dsp %>%  filter(Property %in% prop) %>%
+    group_by(Pedon_ID, PlotID, Region.strata,  Property, Comparison, COND, Soil, AgronFeat) %>%
+    rename(MapUnit= Region.strata, Season = AgronFeat,Field = Comparison) %>%
+    summarize(
+      wt.avg = weighted.mean(Value, hor_thick, na.rm = TRUE)
+    #add quantiles 
+    )
+
+plot <- ped %>%  filter(Property %in% prop) %>%
+    group_by(PlotID, MapUnit,  Property, Field, COND, Soil, Season) %>%
+    summarize(
+      Plot.min = min(wt.avg, na.rm = TRUE),
+      Plot.mean = mean(wt.avg, na.rm = TRUE),
+      Plot.max = max(wt.avg, na.rm = TRUE)
+                                              )
+    #add quantiles? 
+  
+PLOT.mean <- plot %>%
+  select(PlotID, MapUnit,  Property, Field, COND, Soil, Season, Plot.mean) %>%
+  spread(Property, Plot.mean) %>%
+  mutate(OM = SOC*1.72)
+
+PLOT.min <- plot %>%
+  select (PlotID, MapUnit,  Property, Field, COND, Soil, Season, Plot.min) %>%
+  spread(Property, Plot.min)%>%
+  mutate(OM = SOC*1.72)
+
+PLOT.max <- plot %>%
+  select (PlotID, MapUnit,  Property, Field,  COND, Soil, Season, Plot.max) %>%
+  spread(Property, Plot.max)%>%
+  mutate(OM = SOC*1.72)
+
+
+kable(PLOT.mean, digits = 2, caption = "Average Pedon Value for each Plot")
+kable(PLOT.min, digits = 2, caption = "Pedon Minimum Value for each Plot")
+kable(PLOT.max, digits = 2, caption = "Pedon Maximum Value for each Plot")
+```
 ```{r}
 # ## function to create boxplots by subset
 # #########################
