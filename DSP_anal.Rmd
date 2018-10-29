@@ -1,8 +1,10 @@
 ---
 title: "DSP anal"
 author: "Wills"
-date: "July, 2018"
-output: html_document
+date: paste0("July, 2018 - updated:",  "`r format(Sys.time(), '%d %B, %Y')`")
+output:
+  html_document: 
+    keep_md: true
 ---
 
 General Anlysis of DSP master data
@@ -72,6 +74,8 @@ names(dsp_site) <- gsub(" ", "_", names(dsp_site))
 
 ```
 ####Properties
+
+__this stuff can probably be standardized__
 Create standardized properties when multiple methods are used, such as bulk density
   -change rank of methods to alter the way multiple methods are analyzed
   -for this example core bulk density was favored because it was done on nearly all samples
@@ -194,7 +198,9 @@ dsp$SOC <- dsp$Tot_C - 0.12*dsp$CaCarb
 
 
 
-####List of available DSP project names
+##List of available DSP project names
+####Select the project you want __this needs to be interactive__
+
 ```{r proj}
 table(dsp$Name)
 
@@ -229,7 +235,7 @@ It is helpful to group horizons into similar layers for analysis.
 Look at the dsp_data file, you may want relabel the comp_layer for your project.
 Adjust the REGEX rules to seperate other horizons, parent materials etc.
 
-######would like to be able to make this interactive somehow - look at all possible options and assign a ghl
+__would like to be able to make this interactive somehow - look at all possible options and assign a ghl/comparable layer - this may be the toughest part__
 
 ```{r comp}
 # Based on generalized horizon labels
@@ -363,8 +369,9 @@ dsp$bd_source <- ifelse(grepl("^BD", dsp$Property),dsp$bd_source,"")
 ```
 
 ##SUMMARY PLOTS
+__properties should be selectable via dropdown menu__
+__maybe grouping elements are also selectable__
 
-####properties should be selectable via dropdown menu
 ```{r plots}
 
 #check labels
@@ -389,14 +396,15 @@ d <- dsp %>% filter(Property %in% prop)  %>%
 
 
 
-  
-dsp_depth <- dsp %>% filter(Property %in% prop)  %>%
-  split(.$Property) %>%
-    map2(seq_along(.),
-        ggplot(data = ., aes(x = Value, y = hor_top, color=COND)) +  
-                 geom_point() + scale_y_reverse() +
-                 facet_wrap(~Soil)
-    )    
+#not working
+ 
+# dsp_depth <- dsp %>% filter(Property %in% prop)  %>%
+#   split(.$Property) %>%
+#     map2(seq_along(.),
+#         ggplot(data = ., aes(x = Value, y = hor_top, color=COND)) +  
+#                  geom_point() + scale_y_reverse() +
+#                  facet_wrap(~Soil)
+#     )    
 
 
 dd <- dsp %>% filter(Property %in% prop)  %>%
@@ -414,7 +422,7 @@ plots2<-  dsp %>% filter(Property %in% prop)%>% group_by(Property) %>%
   do(x=.$plots + ggtitle(.$Label))
 print(plots2)
 
-map2(paste0(plots$Property, ".pdf"), plots$plot, ggsave)
+#map2(paste0(plots$Property, ".pdf"), plots$plot, ggsave)
 
 
 
@@ -426,8 +434,8 @@ map2(paste0(plots$Property, ".pdf"), plots$plot, ggsave)
 
 
 dsp_box <- dsp %>% filter(Property %in% prop) %>%
-  group_by(Pedon, Comp_layer )
-  ggplot(aes( y = Prop, color = COND)) + geom_box() + facet_wrap(~Comp_layer)
+  group_by(Pedon, Comp_layer ) %>%
+  ggplot(aes( y = Prop, color = COND)) + geom_boxplot() + facet_wrap(~Comp_layer)
   
   
 #how can I make depth plots with ggplot 
@@ -485,6 +493,15 @@ kable(PLOT.mean, digits = 2, caption = "Average Pedon Value for each Plot")
 kable(PLOT.min, digits = 2, caption = "Pedon Minimum Value for each Plot")
 kable(PLOT.max, digits = 2, caption = "Pedon Maximum Value for each Plot")
 ```
+
+
+###Future work
+**Not sure this is worth messing with now.**
+
+- we may want to think about summraies and graphs by depth increments
+- we may want to build multi-level charts
+- we may want to semi-automate tests of differences?
+
 ```{r}
 # ## function to create boxplots by subset
 # #########################
