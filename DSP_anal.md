@@ -1,7 +1,7 @@
 ---
 title: "DSP anal"
 author: "Wills"
-date: paste0("July, 2018 - ",  "29 October, 2018")
+date: paste0("July, 2018 - updated:" ,  29 October, 2018)
 output:
   html_document: 
     keep_md: true
@@ -560,8 +560,20 @@ d <- dsp %>% filter(Property %in% prop)  %>%
 
 
 
+d
+```
 
+```
+## Warning: Removed 98 rows containing missing values (geom_point).
+```
 
+```
+## Warning: Removed 15 rows containing missing values (geom_path).
+```
+
+![](DSP_anal_files/figure-html/plots-1.png)<!-- -->
+
+```r
 #not working
  
 # dsp_depth <- dsp %>% filter(Property %in% prop)  %>%
@@ -582,6 +594,17 @@ dd <- dsp %>% filter(Property %in% prop)  %>%
 
 dd <- ggplot(data=dsp, aes(x = Value, y = hor_top, color=COND)) + geom_point() + facet_wrap(~Soil)
   
+dd
+```
+
+```
+## Warning: Removed 3417 rows containing missing values (geom_point).
+```
+
+![](DSP_anal_files/figure-html/plots-2.png)<!-- -->
+
+```r
+#this isn't going to the MD file
 plots2<-  dsp %>% filter(Property %in% prop)%>% group_by(Property) %>%
   do(plots = dd %+% .) %>%
   rowwise() %>%
@@ -606,7 +629,6 @@ print(plots2)
 #map2(paste0(plots$Property, ".pdf"), plots$plot, ggsave)
 
 
-
 #loop through properties
 #for (Prop in unique(dsp$Property)) {
 # dsp_depth <- %>%
@@ -614,11 +636,24 @@ print(plots2)
 #   
 
 
+#need to work our how to loop through properties
+
 dsp_box <- dsp %>% filter(Property %in% prop) %>%
   group_by(Pedon, Comp_layer ) %>%
-  ggplot(aes( y = Prop, color = COND)) + geom_boxplot() + facet_wrap(~Comp_layer)
+  ggplot(aes( y = Value, x = Comp_layer, color = COND)) + geom_boxplot() + facet_wrap(~Soil + Property) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
   
+dsp_box
+```
+
+```
+## Warning: Removed 98 rows containing non-finite values (stat_boxplot).
+```
+
+![](DSP_anal_files/figure-html/plots-3.png)<!-- -->
+
+```r
 #how can I make depth plots with ggplot 
 # http://www.brodrigues.co/blog/2017-03-29-make-ggplot2-purrr/
 
